@@ -3,7 +3,8 @@
 #include <cstdlib> // malloc
 #include <cassert> // assert
 
-#include "timer.h"
+#include "utils.hpp"
+#include "timer.hpp"
 
 using namespace std;
 
