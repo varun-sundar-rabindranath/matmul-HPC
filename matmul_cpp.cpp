@@ -24,14 +24,19 @@ void matmul(int* A, int* B, int* C, int n) {
 
 }
 
-int main() {
+int main(int argc, char *argv[]) {
 
-  int mat_dim;
+  if(argc != 2) {
+    /* Too many or too few arguments */
+    cerr<<"Too many or too few arguments; \
+Right usage is : ./matmul <square-matrix-dimension>"<<endl;
+    return 0;
+  }
+
+  int mat_dim = atoi(argv[1]);
 
   cout<<"*********** Multiply square matrix **********"<<endl;
-  cout<<"Enter matix dimension : ";
-  cin>>mat_dim;
-  cout<<endl;
+  cout<<"Dimension : "<<mat_dim<<endl;
 
   int* A = NULL; // input
   int* B = NULL; // input
@@ -60,8 +65,8 @@ int main() {
   }
 
   /* Print result with elapsed time */
-  if (c_matmul_pass) { cerr<<"C matmul pass. - "<<getElapsedTime()<<endl; }
-                else { cerr<<"C matmul fail. - "<<getElapsedTime()<<endl; }
+  if (c_matmul_pass) { cerr<<"C matmul pass. - "<<getElapsedTime()<<" microseconds."<<endl; }
+                else { cerr<<"C matmul fail. - "<<getElapsedTime()<<" microseconds."<<endl; }
 
   free(A);
   free(B);
