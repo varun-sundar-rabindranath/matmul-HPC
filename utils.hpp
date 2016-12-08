@@ -1,6 +1,9 @@
 #ifndef __UTILS_HPP__
 #define __UTILS_HPP__
 
+#include <iostream>
+using namespace std;
+
 void print_matrix(int* mat, int dim, char* comment = NULL) {
 
   if(comment)
