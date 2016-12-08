@@ -6,7 +6,7 @@ using namespace std;
 
 void print_matrix(float* mat, int dim, char* comment = NULL) {
 
-  if(comment)
+  if (comment)
     cout<<comment<<endl;
 
   for (int y = 0; y < dim; y++) {
@@ -15,6 +15,16 @@ void print_matrix(float* mat, int dim, char* comment = NULL) {
     }
     cout<<endl;
   }
+}
+
+void transpose(const float* A, float* At, int dim) {
+
+  for (int h = 0; h < dim; h++) {
+    for (int w = 0; w < dim; w++) {
+      At[w * dim + h] = A[h * dim + w];
+    }
+  }
+
 }
 
 #endif // __UTILS_HPP__

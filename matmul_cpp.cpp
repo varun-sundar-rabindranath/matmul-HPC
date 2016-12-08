@@ -11,7 +11,7 @@ using namespace std;
 #define G 1000000000
 #define M 1000000
 
-void matmul(float* A, float* B, float* C, int n) {
+void matmul(const float* A, const float* B, float* C, int n) {
 
   for (int i = 0; i < n; i++) {     // Iterates the rows
     for (int j = 0; j < n; j++) {   // Iterates the columns
@@ -25,6 +25,74 @@ void matmul(float* A, float* B, float* C, int n) {
     }
   }
 
+}
+
+void matmul_transpose(const float* A, const float* B, float* C, int n) {
+
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+
+      float product = 0;
+      for (int k = 0; k < n; k++) {
+        product += A[i * n + k] * B[j * n + k];
+      }
+      C[i * n + j] = product;
+
+    }
+  }
+
+}
+
+void run_matmul_C(const float* A, const float* B, float* C, int mat_dim) {
+
+  startTimer();
+  matmul(A, B, C, mat_dim); // C = A * B
+  endTimer();
+
+  /* Check C
+   * Multiplying matrices of all 1's should leave C with all values 'mat_dim'
+   */
+  bool c_matmul_pass = true;
+  for (int iter = 0; iter < mat_dim * mat_dim; iter++) {
+    if(C[iter] != mat_dim) { c_matmul_pass = false; break; }
+  }
+
+  /* Print result with elapsed time */
+  if (c_matmul_pass) {
+    cerr<<"C matmul pass. - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+  } else {
+    cerr<<"C matmul fail. - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+  }
+}
+
+void run_matmul_C_transpose(const float* A, const float* B, float* C, int mat_dim) {
+
+  float* B_transpose = NULL;
+  B_transpose = (float*)calloc(mat_dim * mat_dim, sizeof(float));
+  assert(B_transpose != NULL && "Cannot allocate memory - B_transpose");
+
+  transpose(B, B_transpose, mat_dim);
+
+  startTimer();
+  matmul_transpose(A, B_transpose, C, mat_dim); // C = A * B
+  endTimer();
+
+  /* Check C
+   * Multiplying matrices of all 1's should leave C with all values 'mat_dim'
+   */
+  bool c_matmul_pass = true;
+  for (int iter = 0; iter < mat_dim * mat_dim; iter++) {
+    if(C[iter] != mat_dim) { c_matmul_pass = false; break; }
+  }
+
+  /* Print result with elapsed time */
+  if (c_matmul_pass) {
+    cerr<<"C matmul pass. - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+  } else {
+    cerr<<"C matmul fail. - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+  }
+
+  free(B_transpose);
 }
 
 int main(int argc, char *argv[]) {
@@ -58,24 +126,9 @@ int main(int argc, char *argv[]) {
   /* Fill A and B */
   for (int iter = 0; iter < mat_dim * mat_dim; iter++) { A[iter] = 1; B[iter] = 1; }
 
-  startTimer();
-  matmul(A, B, C, mat_dim); // C = A * B
-  endTimer();
+  run_matmul_C(A, B, C, mat_dim);
 
-  /* Check C
-   * Multiplying matrices of all 1's should leave C with all values 'mat_dim'
-   */
-  bool c_matmul_pass = true;
-  for (int iter = 0; iter < mat_dim * mat_dim; iter++) {
-    if(C[iter] != mat_dim) { c_matmul_pass = false; break; }
-  }
-
-  /* Print result with elapsed time */
-  if (c_matmul_pass) {
-    cerr<<"C matmul pass. - "<<getElapsedTime() / (double)M<<" sec."<<endl;
-  } else {
-    cerr<<"C matmul fail. - "<<getElapsedTime() / (double)M<<" sec."<<endl;
-  }
+  run_matmul_C_transpose(A, B, C, mat_dim);
 
   free(A);
   free(B);
