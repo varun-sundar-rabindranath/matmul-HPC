@@ -7,6 +7,22 @@
 
 using namespace std;
 
+void matmul(int* A, int* B, int* C, int n) {
+
+  for (int i = 0; i < n; i++) {     // Iterates the rows
+    for (int j = 0; j < n; j++) {   // Iterates the columns
+
+      int product = 0;
+      for (int k = 0; k < n; k++) {
+        product += A[i * n + k] * B[k * n + j];
+      }
+      C[i * n + j] = product;
+
+    }
+  }
+
+}
+
 int main() {
 
   int mat_dim;
@@ -22,6 +38,7 @@ int main() {
 
   A = (int*) calloc(mat_dim * mat_dim, sizeof(int));
   B = (int*) calloc(mat_dim * mat_dim, sizeof(int));
+  C = (int*) calloc(mat_dim * mat_dim, sizeof(int));
 
   assert(A != NULL && "Cannot allocate memory - A");
   assert(B != NULL && "Cannot allocate memory - B");
@@ -30,7 +47,7 @@ int main() {
   for (int iter = 0; iter < mat_dim * mat_dim; iter++) { A[iter] = 1; B[iter] = 1; }
 
   startTimer();
-  C = matmul(A, B); // C = A * B
+  matmul(A, B, C, mat_dim); // C = A * B
   endTimer();
 
   /* Check C
