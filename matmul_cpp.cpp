@@ -11,12 +11,12 @@ using namespace std;
 #define G 1000000000
 #define M 1000000
 
-void matmul(int* A, int* B, int* C, int n) {
+void matmul(float* A, float* B, float* C, int n) {
 
   for (int i = 0; i < n; i++) {     // Iterates the rows
     for (int j = 0; j < n; j++) {   // Iterates the columns
 
-      int product = 0;
+      float product = 0;
       for (int k = 0; k < n; k++) {
         product += A[i * n + k] * B[k * n + j];
       }
@@ -40,16 +40,16 @@ int main(int argc, char *argv[]) {
 
   cout<<"*********** Multiply square matrix **********"<<endl;
   cout<<"Dimension       : "<<mat_dim<<endl;
-  cout<<"Memory required : "<<(double)(mat_dim * mat_dim * 3 * sizeof(int)) /
+  cout<<"Memory required : "<<(double)(mat_dim * mat_dim * 3 * sizeof(float)) /
                                                         (double)G<<" GB"<<endl;
 
-  int* A = NULL; // input
-  int* B = NULL; // input
-  int* C = NULL; // A * B
+  float* A = NULL; // input
+  float* B = NULL; // input
+  float* C = NULL; // A * B
 
-  A = (int*) calloc(mat_dim * mat_dim, sizeof(int));
-  B = (int*) calloc(mat_dim * mat_dim, sizeof(int));
-  C = (int*) calloc(mat_dim * mat_dim, sizeof(int));
+  A = (float*) calloc(mat_dim * mat_dim, sizeof(float));
+  B = (float*) calloc(mat_dim * mat_dim, sizeof(float));
+  C = (float*) calloc(mat_dim * mat_dim, sizeof(float));
 
   assert(A != NULL && "Cannot allocate memory - A");
   assert(B != NULL && "Cannot allocate memory - B");

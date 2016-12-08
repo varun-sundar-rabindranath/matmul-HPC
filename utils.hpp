@@ -4,7 +4,7 @@
 #include <iostream>
 using namespace std;
 
-void print_matrix(int* mat, int dim, char* comment = NULL) {
+void print_matrix(float* mat, int dim, char* comment = NULL) {
 
   if(comment)
     cout<<comment<<endl;
