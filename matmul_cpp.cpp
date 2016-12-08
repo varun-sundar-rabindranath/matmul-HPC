@@ -8,6 +8,9 @@
 
 using namespace std;
 
+#define G 1000000000
+#define M 1000000
+
 void matmul(int* A, int* B, int* C, int n) {
 
   for (int i = 0; i < n; i++) {     // Iterates the rows
@@ -36,7 +39,9 @@ int main(int argc, char *argv[]) {
   int mat_dim = atoi(argv[1]);
 
   cout<<"*********** Multiply square matrix **********"<<endl;
-  cout<<"Dimension : "<<mat_dim<<endl;
+  cout<<"Dimension       : "<<mat_dim<<endl;
+  cout<<"Memory required : "<<(double)(mat_dim * mat_dim * 3 * sizeof(int)) /
+                                                        (double)G<<" GB"<<endl;
 
   int* A = NULL; // input
   int* B = NULL; // input
@@ -48,6 +53,7 @@ int main(int argc, char *argv[]) {
 
   assert(A != NULL && "Cannot allocate memory - A");
   assert(B != NULL && "Cannot allocate memory - B");
+  assert(C != NULL && "Cannot allocate memory - C");
 
   /* Fill A and B */
   for (int iter = 0; iter < mat_dim * mat_dim; iter++) { A[iter] = 1; B[iter] = 1; }
@@ -65,8 +71,11 @@ int main(int argc, char *argv[]) {
   }
 
   /* Print result with elapsed time */
-  if (c_matmul_pass) { cerr<<"C matmul pass. - "<<getElapsedTime()<<" microseconds."<<endl; }
-                else { cerr<<"C matmul fail. - "<<getElapsedTime()<<" microseconds."<<endl; }
+  if (c_matmul_pass) {
+    cerr<<"C matmul pass. - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+  } else {
+    cerr<<"C matmul fail. - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+  }
 
   free(A);
   free(B);
