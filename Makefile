@@ -1,2 +1,2 @@
 matmul_cpp: matmul_cpp.cpp timer.cpp utils.hpp timer.hpp
-	g++ matmul_cpp.cpp timer.cpp -o matmul_cpp -fopenmp
+	g++ -O3 matmul_cpp.cpp timer.cpp -o matmul_cpp -fopenmp
