@@ -28,8 +28,8 @@ int main(int argc, char *argv[]) {
 
   if(argc != 2) {
     /* Too many or too few arguments */
-    cerr<<"Too many or too few arguments; \
-Right usage is : ./matmul <square-matrix-dimension>"<<endl;
+    cerr<<" Too many or too few arguments;"<<endl;
+    cerr<<" Right usage is : ./matmul <square-matrix-dimension>"<<endl;
     return 0;
   }
 
