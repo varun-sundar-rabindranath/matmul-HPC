@@ -80,9 +80,9 @@ void run_matmul_C(const float* A, const float* B, float* C, int mat_dim) {
 
   /* Print result with elapsed time */
   if (c_matmul_pass) {
-    cerr<<"C matmul pass. - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+    cerr<<"C matmul (Naive) pass - "<<getElapsedTime() / (double)M<<" sec."<<endl;
   } else {
-    cerr<<"C matmul fail. - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+    cerr<<"C matmul (Naive) fail - "<<getElapsedTime() / (double)M<<" sec."<<endl;
   }
 }
 
@@ -108,9 +108,11 @@ void run_matmul_C_transpose(const float* A, const float* B, float* C, int mat_di
 
   /* Print result with elapsed time */
   if (c_matmul_pass) {
-    cerr<<"C matmul pass. - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+    cerr<<"C matmul (Transpose) pass - "<<
+                                getElapsedTime() / (double)M<<" sec."<<endl;
   } else {
-    cerr<<"C matmul fail. - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+    cerr<<"C matmul (Transpose) fail - "<<
+                                getElapsedTime() / (double)M<<" sec."<<endl;
   }
 
   free(B_transpose);
@@ -139,9 +141,11 @@ void run_matmul_C_transpose_multithread(const float* A, const float* B,
 
   /* Print result with elapsed time */
   if (c_matmul_pass) {
-    cerr<<"C matmul pass. - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+    cerr<<"C matmul (Multithread transpose) pass - "<<
+                                 getElapsedTime() / (double)M<<" sec."<<endl;
   } else {
-    cerr<<"C matmul fail. - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+    cerr<<"C matmul (Multithread transpose) fail - "<<
+                                 getElapsedTime() / (double)M<<" sec."<<endl;
   }
 
   free(B_transpose);
@@ -178,9 +182,9 @@ int main(int argc, char *argv[]) {
   /* Fill A and B */
   for (int iter = 0; iter < mat_dim * mat_dim; iter++) { A[iter] = 1; B[iter] = 1; }
 
-  //run_matmul_C(A, B, C, mat_dim);
+  run_matmul_C(A, B, C, mat_dim);
 
-  //run_matmul_C_transpose(A, B, C, mat_dim);
+  run_matmul_C_transpose(A, B, C, mat_dim);
 
   run_matmul_C_transpose_multithread(A, B, C, mat_dim);
 
