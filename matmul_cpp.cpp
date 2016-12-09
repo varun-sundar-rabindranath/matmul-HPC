@@ -15,9 +15,6 @@ using namespace std;
 #define G 1000000000
 #define M 1000000
 
-/* If stmt evaluates to false; error out */
-#define ERR_RET(stmt) if (stmt) { cerr<<"Error - "<<__FILE__<<" "<<__LINE__<<endl; return; }
-
 void matmul(const float* A, const float* B, float* C, int n) {
 
   for (int i = 0; i < n; i++) {     // Iterates the rows
