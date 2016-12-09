@@ -8,10 +8,15 @@
 #include "utils.hpp"
 #include "timer.hpp"
 
+#include "matmul_cuda.h" // Cuda matrix multiplication code
+
 using namespace std;
 
 #define G 1000000000
 #define M 1000000
+
+/* If stmt evaluates to false; error out */
+#define ERR_RET(stmt) if (stmt) { cerr<<"Error - "<<__FILE__<<" "<<__LINE__<<endl; return; }
 
 void matmul(const float* A, const float* B, float* C, int n) {
 
@@ -182,11 +187,13 @@ int main(int argc, char *argv[]) {
   /* Fill A and B */
   for (int iter = 0; iter < mat_dim * mat_dim; iter++) { A[iter] = 1; B[iter] = 1; }
 
-  run_matmul_C(A, B, C, mat_dim);
+  //run_matmul_C(A, B, C, mat_dim);
 
-  run_matmul_C_transpose(A, B, C, mat_dim);
+  //run_matmul_C_transpose(A, B, C, mat_dim);
 
-  run_matmul_C_transpose_multithread(A, B, C, mat_dim);
+  //run_matmul_C_transpose_multithread(A, B, C, mat_dim);
+
+  run_matmul_cuda(A, B, C, mat_dim);
 
   free(A);
   free(B);
