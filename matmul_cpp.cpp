@@ -190,7 +190,9 @@ int main(int argc, char *argv[]) {
 
   //run_matmul_C_transpose_multithread(A, B, C, mat_dim);
 
-  run_matmul_cuda(A, B, C, mat_dim);
+  //run_matmul_cuda(A, B, C, mat_dim);
+
+  run_matmul_cuda_transpose(A, B, C, mat_dim);
 
   free(A);
   free(B);
