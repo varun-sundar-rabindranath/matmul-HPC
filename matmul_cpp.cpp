@@ -65,25 +65,7 @@ void matmul_transpose_multithread(const float* A, const float* B, float* C, int 
 }
 
 void run_matmul_C(const float* A, const float* B, float* C, int mat_dim) {
-
-  startTimer();
   matmul(A, B, C, mat_dim); // C = A * B
-  endTimer();
-
-  /* Check C
-   * Multiplying matrices of all 1's should leave C with all values 'mat_dim'
-   */
-  bool c_matmul_pass = true;
-  for (int iter = 0; iter < mat_dim * mat_dim; iter++) {
-    if(C[iter] != mat_dim) { c_matmul_pass = false; break; }
-  }
-
-  /* Print result with elapsed time */
-  if (c_matmul_pass) {
-    cerr<<"C matmul (Naive) pass - "<<getElapsedTime() / (double)M<<" sec."<<endl;
-  } else {
-    cerr<<"C matmul (Naive) fail - "<<getElapsedTime() / (double)M<<" sec."<<endl;
-  }
 }
 
 void run_matmul_C_transpose(const float* A, const float* B, float* C, int mat_dim) {
@@ -94,26 +76,7 @@ void run_matmul_C_transpose(const float* A, const float* B, float* C, int mat_di
 
   transpose(B, B_transpose, mat_dim);
 
-  startTimer();
   matmul_transpose(A, B_transpose, C, mat_dim); // C = A * B
-  endTimer();
-
-  /* Check C
-   * Multiplying matrices of all 1's should leave C with all values 'mat_dim'
-   */
-  bool c_matmul_pass = true;
-  for (int iter = 0; iter < mat_dim * mat_dim; iter++) {
-    if(C[iter] != mat_dim) { c_matmul_pass = false; break; }
-  }
-
-  /* Print result with elapsed time */
-  if (c_matmul_pass) {
-    cerr<<"C matmul (Transpose) pass - "<<
-                                getElapsedTime() / (double)M<<" sec."<<endl;
-  } else {
-    cerr<<"C matmul (Transpose) fail - "<<
-                                getElapsedTime() / (double)M<<" sec."<<endl;
-  }
 
   free(B_transpose);
 }
@@ -127,28 +90,21 @@ void run_matmul_C_transpose_multithread(const float* A, const float* B,
 
   transpose(B, B_transpose, mat_dim);
 
-  startTimer();
   matmul_transpose_multithread(A, B_transpose, C, mat_dim); // C = A * B
-  endTimer();
-
-  /* Check C
-   * Multiplying matrices of all 1's should leave C with all values 'mat_dim'
-   */
-  bool c_matmul_pass = true;
-  for (int iter = 0; iter < mat_dim * mat_dim; iter++) {
-    if(C[iter] != mat_dim) { c_matmul_pass = false; break; }
-  }
-
-  /* Print result with elapsed time */
-  if (c_matmul_pass) {
-    cerr<<"C matmul (Multithread transpose) pass - "<<
-                                 getElapsedTime() / (double)M<<" sec."<<endl;
-  } else {
-    cerr<<"C matmul (Multithread transpose) fail - "<<
-                                 getElapsedTime() / (double)M<<" sec."<<endl;
-  }
 
   free(B_transpose);
+}
+
+bool check_matmul(const float* A, const float* B, float* C, int mat_dim) {
+
+  for(int iter = 0; iter < mat_dim; iter++) {
+    /* Test function for matrices A and B containing 1 */
+    assert(A[iter] == 1 && B[iter] == 1);
+
+    if(C[iter] != mat_dim) { return false; }
+  }
+
+  return true;
 }
 
 int main(int argc, char *argv[]) {
@@ -180,13 +136,43 @@ int main(int argc, char *argv[]) {
   assert(C != NULL && "Cannot allocate memory - C");
 
   /* Fill A and B */
-  for (int iter = 0; iter < mat_dim * mat_dim; iter++) { A[iter] = 1; B[iter] = 1; }
+  for (int iter = 0; iter < mat_dim * mat_dim; iter++) {
+    A[iter] = 1; B[iter] = 1;
+  }
 
+  /********************************* Matrix multiply C *************************/
+  /* Naive matrix multiply */
+  startTimer();
   run_matmul_C(A, B, C, mat_dim);
+  endTimer();
 
+  if(check_matmul(A, B, C, mat_dim)) {
+    cout<<"C Naive Matrix Multiply Pass - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+  } else {
+    cout<<"C Naive Matrix Multiply Fail - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+  }
+
+  /* Transposed matrix multiply */
+  startTimer();
   run_matmul_C_transpose(A, B, C, mat_dim);
+  endTimer();
 
+  if(check_matmul(A, B, C, mat_dim)) {
+    cout<<"C Transpose Matrix Multiply Pass - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+  } else {
+    cout<<"C Transpose Matrix Multiply Fail - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+  }
+
+  /* Transpose Multi-threaded Matrix Multiply */
+  startTimer();
   run_matmul_C_transpose_multithread(A, B, C, mat_dim);
+  endTimer();
+
+  if(check_matmul(A, B, C, mat_dim)) {
+    cout<<"C Transpose Multi-Threaded Matrix Multiply Pass - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+  } else {
+    cout<<"C Transpose Multi-Threaded Matrix Multiply Fail - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+  }
 
   free(A);
   free(B);
