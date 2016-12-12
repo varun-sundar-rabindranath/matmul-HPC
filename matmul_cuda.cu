@@ -60,7 +60,10 @@ void run_matmul_cuda(const float* A, const float* B, float* C, int mat_dim) {
   /* Fix grid and block dim */
 #define BLOCKDIM 32
   dim3 block_dim(BLOCKDIM, BLOCKDIM);
-  dim3 grid_dim((mat_dim / BLOCKDIM) + 1, (mat_dim / BLOCKDIM) + 1);
+  dim3 grid_dim(((mat_dim - 1) / BLOCKDIM) + 1, ((mat_dim - 1) / BLOCKDIM) + 1);
+
+  cout<<"Launching Grid ("<<grid_dim.x<<", "<<grid_dim.y<<", "<<grid_dim.z<<")";
+  cout<<", Block ("<<block_dim.x<<", "<<block_dim.y<<", "<<block_dim.z<<")"<<endl;
 
   startTimer();
 
