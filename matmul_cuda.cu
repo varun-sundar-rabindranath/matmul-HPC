@@ -84,37 +84,18 @@ void run_matmul_cuda(const float* A, const float* B, float* C, int mat_dim) {
   dim3 block_dim(BLOCKDIM, BLOCKDIM);
   dim3 grid_dim(((mat_dim - 1) / BLOCKDIM) + 1, ((mat_dim - 1) / BLOCKDIM) + 1);
 
-  cout<<"Launching Grid ("<<grid_dim.x<<", "<<grid_dim.y<<", "<<grid_dim.z<<")";
-  cout<<", Block ("<<block_dim.x<<", "<<block_dim.y<<", "<<block_dim.z<<")"<<endl;
-
-  startTimer();
+  //cout<<"Launching Grid ("<<grid_dim.x<<", "<<grid_dim.y<<", "<<grid_dim.z<<")";
+  //cout<<", Block ("<<block_dim.x<<", "<<block_dim.y<<", "<<block_dim.z<<")"<<endl;
 
   /* Invoke kernel and wait for its completion */
   matmul_cuda_naive<<<grid_dim, block_dim>>>(devA, devB, devC, mat_dim);
   cudaDeviceSynchronize();
 
-  endTimer();
 #undef BLOCKDIM
 
   /* Copy Results from GPU to CPU */
   err = cudaMemcpy(C, devC, data_bytes, cudaMemcpyDeviceToHost);
   ERR_RET(err != cudaSuccess);
-
-
-  /* Multiplying matrices of all 1's should leave C with all values 'mat_dim' */
-  bool matmul_pass = true;
-  for (int iter = 0; iter < mat_dim * mat_dim; iter++) {
-    if(C[iter] != mat_dim) { matmul_pass = false; break; }
-  }
-
-  /* Print result with elapsed time */
-  if (matmul_pass) {
-    cerr<<"CUDA matmul (Naive) pass - "<<
-                                getElapsedTime() / (double)M<<" sec."<<endl;
-  } else {
-    cerr<<"CUDA matmul (Naive) fail - "<<
-                                getElapsedTime() / (double)M<<" sec."<<endl;
-  }
 
   cudaFree(devA);
   cudaFree(devB);
@@ -160,37 +141,18 @@ void run_matmul_cuda_transpose(const float* A, const float* B, float* C, int mat
   dim3 block_dim(BLOCKDIM, BLOCKDIM);
   dim3 grid_dim(((mat_dim - 1) / BLOCKDIM) + 1, ((mat_dim - 1) / BLOCKDIM) + 1);
 
-  cout<<"Launching Grid ("<<grid_dim.x<<", "<<grid_dim.y<<", "<<grid_dim.z<<")";
-  cout<<", Block ("<<block_dim.x<<", "<<block_dim.y<<", "<<block_dim.z<<")"<<endl;
-
-  startTimer();
+  //cout<<"Launching Grid ("<<grid_dim.x<<", "<<grid_dim.y<<", "<<grid_dim.z<<")";
+  //cout<<", Block ("<<block_dim.x<<", "<<block_dim.y<<", "<<block_dim.z<<")"<<endl;
 
   /* Invoke kernel and wait for its completion */
   matmul_cuda_transpose<<<grid_dim, block_dim>>>(devA, devB, devC, mat_dim);
   cudaDeviceSynchronize();
 
-  endTimer();
 #undef BLOCKDIM
 
   /* Copy Results from GPU to CPU */
   err = cudaMemcpy(C, devC, data_bytes, cudaMemcpyDeviceToHost);
   ERR_RET(err != cudaSuccess);
-
-
-  /* Multiplying matrices of all 1's should leave C with all values 'mat_dim' */
-  bool matmul_pass = true;
-  for (int iter = 0; iter < mat_dim * mat_dim; iter++) {
-    if(C[iter] != mat_dim) { matmul_pass = false; break; }
-  }
-
-  /* Print result with elapsed time */
-  if (matmul_pass) {
-    cerr<<"CUDA matmul (Transpose) pass - "<<
-                                getElapsedTime() / (double)M<<" sec."<<endl;
-  } else {
-    cerr<<"CUDA matmul (Transpose) fail - "<<
-                                getElapsedTime() / (double)M<<" sec."<<endl;
-  }
 
   cudaFree(devA);
   cudaFree(devB);
