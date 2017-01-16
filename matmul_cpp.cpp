@@ -143,6 +143,7 @@ int main(int argc, char *argv[]) {
   }
 
   /********************************* Matrix multiply C *************************/
+#if 0
   /* Naive matrix multiply */
   startTimer();
   run_matmul_C(A, B, C, mat_dim);
@@ -175,9 +176,11 @@ int main(int argc, char *argv[]) {
   } else {
     cout<<"C Transpose Multi-Threaded Matrix Multiply Fail - "<<getElapsedTime() / (double)M<<" sec."<<endl;
   }
+#endif
 
   /******************************** Matrix multiply CUDA ***********************/
   /* Naive CUDA Matrix Multiply */
+#if 0
   startTimer();
   run_matmul_cuda(A, B, C, mat_dim);
   endTimer();
@@ -187,8 +190,11 @@ int main(int argc, char *argv[]) {
   } else {
     cout<<"CUDA Naive Matrix Multiply Fail - "<<getElapsedTime() / (double)M<<" sec."<<endl;
   }
+#endif
 
   /* CUDA Transpose Matrix Multiply */
+
+#if 1
   startTimer();
   run_matmul_cuda_transpose(A, B, C, mat_dim);
   endTimer();
@@ -198,6 +204,7 @@ int main(int argc, char *argv[]) {
   } else {
     cout<<"CUDA Transpose Matrix Multiply Fail - "<<getElapsedTime() / (double)M<<" sec."<<endl;
   }
+#endif
 
   free(A);
   free(B);
