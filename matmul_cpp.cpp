@@ -15,6 +15,18 @@ using namespace std;
 #define G 1000000000
 #define M 1000000
 
+#define CHECK(A, B, C, mat_dim, type)                                           \
+  cout<<"========== "<<type<<" =========="<<endl<<endl;                         \
+  if(check_matmul(A, B, C, mat_dim)) {                                          \
+    cout<<" PASS "<<getElapsedTime(APP_TIMER) / (double)M<<" sec."<<" | "       \
+        <<"Matrix Multiply Time - "<<matmul_time / (double)M<<" sec. "<<endl;   \
+  } else {                                                                      \
+    cout<<" FAIL "<<getElapsedTime(APP_TIMER) / (double)M<<" sec."<<" | "       \
+        <<"Matrix Multiply Time - "<<matmul_time / (double)M<<" sec. "<<endl;   \
+  }                                                                             \
+  cout<<endl;
+
+
 void matmul(const float* A, const float* B, float* C, int n) {
 
   for (int i = 0; i < n; i++) {     // Iterates the rows
@@ -66,11 +78,15 @@ void matmul_transpose_multithread(const float* A, const float* B, float* C, int 
 
 }
 
-void run_matmul_C(const float* A, const float* B, float* C, int mat_dim) {
+void run_matmul_C(const float* A, const float* B, float* C, int mat_dim, ULL* matmul_time) {
+  startTimer(MATMUL_TIMER);
   matmul(A, B, C, mat_dim); // C = A * B
+  endTimer(MATMUL_TIMER);
+
+  if (matmul_time) { *matmul_time = getElapsedTime(MATMUL_TIMER); }
 }
 
-void run_matmul_C_transpose(const float* A, const float* B, float* C, int mat_dim) {
+void run_matmul_C_transpose(const float* A, const float* B, float* C, int mat_dim, ULL* matmul_time) {
 
   float* B_transpose = NULL;
   B_transpose = (float*)calloc(mat_dim * mat_dim, sizeof(float));
@@ -78,13 +94,17 @@ void run_matmul_C_transpose(const float* A, const float* B, float* C, int mat_di
 
   transpose(B, B_transpose, mat_dim);
 
+  startTimer(MATMUL_TIMER);
   matmul_transpose(A, B_transpose, C, mat_dim); // C = A * B
+  endTimer(MATMUL_TIMER);
+
+  if (matmul_time) { *matmul_time = getElapsedTime(MATMUL_TIMER); }
 
   free(B_transpose);
 }
 
 void run_matmul_C_transpose_multithread(const float* A, const float* B,
-                                        float* C, int mat_dim) {
+                                        float* C, int mat_dim, ULL* matmul_time) {
 
   float* B_transpose = NULL;
   B_transpose = (float*)calloc(mat_dim * mat_dim, sizeof(float));
@@ -92,7 +112,11 @@ void run_matmul_C_transpose_multithread(const float* A, const float* B,
 
   transpose(B, B_transpose, mat_dim);
 
+  startTimer(MATMUL_TIMER);
   matmul_transpose_multithread(A, B_transpose, C, mat_dim); // C = A * B
+  endTimer(MATMUL_TIMER);
+
+  if (matmul_time) { *matmul_time = getElapsedTime(MATMUL_TIMER); }
 
   free(B_transpose);
 }
@@ -142,81 +166,59 @@ int main(int argc, char *argv[]) {
     A[iter] = 1; B[iter] = 1;
   }
 
-  /********************************* Matrix multiply C *************************/
-#if 0
-  /* Naive matrix multiply */
-  startTimer();
-  run_matmul_C(A, B, C, mat_dim);
-  endTimer();
+  /* Get time taken for matrix multiply operation alone */
+  ULL matmul_time;
 
-  if(check_matmul(A, B, C, mat_dim)) {
-    cout<<"C Naive Matrix Multiply Pass - "<<getElapsedTime() / (double)M<<" sec."<<endl;
-  } else {
-    cout<<"C Naive Matrix Multiply Fail - "<<getElapsedTime() / (double)M<<" sec."<<endl;
-  }
+  /********************************* Matrix multiply C *************************/
+#if 1
+  /* Naive matrix multiply */
+  startTimer(APP_TIMER);
+  run_matmul_C(A, B, C, mat_dim, &matmul_time);
+  endTimer(APP_TIMER);
+
+  CHECK(A, B, C, mat_dim, "C Naive Matrix Multiply")
 
   /* Transposed matrix multiply */
-  startTimer();
-  run_matmul_C_transpose(A, B, C, mat_dim);
-  endTimer();
+  startTimer(APP_TIMER);
+  run_matmul_C_transpose(A, B, C, mat_dim, &matmul_time);
+  endTimer(APP_TIMER);
 
-  if(check_matmul(A, B, C, mat_dim)) {
-    cout<<"C Transpose Matrix Multiply Pass - "<<getElapsedTime() / (double)M<<" sec."<<endl;
-  } else {
-    cout<<"C Transpose Matrix Multiply Fail - "<<getElapsedTime() / (double)M<<" sec."<<endl;
-  }
+  CHECK(A, B, C, mat_dim, "C Transpose Matrix Multiply")
 
   /* Transpose Multi-threaded Matrix Multiply */
-  startTimer();
-  run_matmul_C_transpose_multithread(A, B, C, mat_dim);
-  endTimer();
+  startTimer(APP_TIMER);
+  run_matmul_C_transpose_multithread(A, B, C, mat_dim, &matmul_time);
+  endTimer(APP_TIMER);
 
-  if(check_matmul(A, B, C, mat_dim)) {
-    cout<<"C Transpose Multi-Threaded Matrix Multiply Pass - "<<getElapsedTime() / (double)M<<" sec."<<endl;
-  } else {
-    cout<<"C Transpose Multi-Threaded Matrix Multiply Fail - "<<getElapsedTime() / (double)M<<" sec."<<endl;
-  }
+  CHECK(A, B, C, mat_dim, "C Transpose Multi-Threaded Matrix Multiply")
 #endif
 
   /******************************** Matrix multiply CUDA ***********************/
   /* Naive CUDA Matrix Multiply */
 #if 1
-  startTimer();
-  run_matmul_cuda(A, B, C, mat_dim);
-  endTimer();
+  startTimer(APP_TIMER);
+  run_matmul_cuda(A, B, C, mat_dim, &matmul_time);
+  endTimer(APP_TIMER);
 
-  if(check_matmul(A, B, C, mat_dim)) {
-    cout<<"CUDA Naive Matrix Multiply Pass - "<<getElapsedTime() / (double)M<<" sec."<<endl;
-  } else {
-    cout<<"CUDA Naive Matrix Multiply Fail - "<<getElapsedTime() / (double)M<<" sec."<<endl;
-  }
+  CHECK(A, B, C, mat_dim, "CUDA Naive Matrix Multiply")
 #endif
 
   /* CUDA Transpose Matrix Multiply */
 
-#if 0
-  startTimer();
-  run_matmul_cuda_transpose(A, B, C, mat_dim);
-  endTimer();
+#if 1
+  startTimer(APP_TIMER);
+  run_matmul_cuda_transpose(A, B, C, mat_dim, &matmul_time);
+  endTimer(APP_TIMER);
 
-  if(check_matmul(A, B, C, mat_dim)) {
-    cout<<"CUDA Transpose Matrix Multiply Pass - "<<getElapsedTime() / (double)M<<" sec."<<endl;
-  } else {
-    cout<<"CUDA Transpose Matrix Multiply Fail - "<<getElapsedTime() / (double)M<<" sec."<<endl;
-  }
+  CHECK(A, B, C, mat_dim, "CUDA Transpose Matrix Multiply");
 #endif
 
 #if 1
-  startTimer();
-  run_matmul_cuda_shared(A, B, C, mat_dim);
-  endTimer();
+  startTimer(APP_TIMER);
+  run_matmul_cuda_shared(A, B, C, mat_dim, &matmul_time);
+  endTimer(APP_TIMER);
 
-  if(check_matmul(A, B, C, mat_dim)) {
-    cout<<"CUDA Shared Matrix Multiply Pass - "<<getElapsedTime() / (double)M<<" sec."<<endl;
-  } else {
-    cout<<"CUDA Shared Matrix Multiply Fail - "<<getElapsedTime() / (double)M<<" sec."<<endl;
-  }
-
+  CHECK(A, B, C, mat_dim, "CUDA Shared Memory Matrix Multiply");
 #endif
 
   free(A);

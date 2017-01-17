@@ -109,14 +109,11 @@ __global__ void matmul_cuda_shared(const float* A, const float* B, float* C, int
 
   if (idx_x < mat_dim && idx_y < mat_dim) {
     C[idx_y * mat_dim + idx_x] = product;
-    //if (blockIdx.x == 0 && blockIdx.y ==0) {
-    //  C[threadIdx.y * mat_dim + threadIdx.x] = smem_A[threadIdx.y * blockDim.x + threadIdx.x];
-    //}
   }
 }
 
 /* Host setup for GPU execution done here */
-void run_matmul_cuda(const float* A, const float* B, float* C, int mat_dim) {
+void run_matmul_cuda(const float* A, const float* B, float* C, int mat_dim, ULL* matmul_time) {
 
   cudaError_t err;
 
@@ -145,12 +142,13 @@ void run_matmul_cuda(const float* A, const float* B, float* C, int mat_dim) {
   dim3 block_dim(BLOCKDIM, BLOCKDIM);
   dim3 grid_dim(((mat_dim - 1) / BLOCKDIM) + 1, ((mat_dim - 1) / BLOCKDIM) + 1);
 
-  //cout<<"Launching Grid ("<<grid_dim.x<<", "<<grid_dim.y<<", "<<grid_dim.z<<")";
-  //cout<<", Block ("<<block_dim.x<<", "<<block_dim.y<<", "<<block_dim.z<<")"<<endl;
-
   /* Invoke kernel and wait for its completion */
+  startTimer(MATMUL_TIMER);
   matmul_cuda_naive<<<grid_dim, block_dim>>>(devA, devB, devC, mat_dim);
   cudaDeviceSynchronize();
+  endTimer(MATMUL_TIMER);
+
+  if (matmul_time) { *matmul_time = getElapsedTime(MATMUL_TIMER); }
 
 #undef BLOCKDIM
 
@@ -166,7 +164,7 @@ void run_matmul_cuda(const float* A, const float* B, float* C, int mat_dim) {
 }
 
 /* Host setup for GPU execution done here */
-void run_matmul_cuda_transpose(const float* A, const float* B, float* C, int mat_dim) {
+void run_matmul_cuda_transpose(const float* A, const float* B, float* C, int mat_dim, ULL* matmul_time) {
 
   cudaError_t err;
 
@@ -202,12 +200,13 @@ void run_matmul_cuda_transpose(const float* A, const float* B, float* C, int mat
   dim3 block_dim(BLOCKDIM, BLOCKDIM);
   dim3 grid_dim(((mat_dim - 1) / BLOCKDIM) + 1, ((mat_dim - 1) / BLOCKDIM) + 1);
 
-  //cout<<"Launching Grid ("<<grid_dim.x<<", "<<grid_dim.y<<", "<<grid_dim.z<<")";
-  //cout<<", Block ("<<block_dim.x<<", "<<block_dim.y<<", "<<block_dim.z<<")"<<endl;
-
   /* Invoke kernel and wait for its completion */
+  startTimer(MATMUL_TIMER);
   matmul_cuda_transpose<<<grid_dim, block_dim>>>(devA, devB, devC, mat_dim);
   cudaDeviceSynchronize();
+  endTimer(MATMUL_TIMER);
+
+  if (matmul_time) { *matmul_time = getElapsedTime(MATMUL_TIMER); }
 
 #undef BLOCKDIM
 
@@ -223,7 +222,7 @@ void run_matmul_cuda_transpose(const float* A, const float* B, float* C, int mat
 }
 
 /* Host setup for GPU execution done here */
-void run_matmul_cuda_shared(const float* A, const float* B, float* C, int mat_dim) {
+void run_matmul_cuda_shared(const float* A, const float* B, float* C, int mat_dim, ULL* matmul_time) {
 
   cudaError_t err;
 
@@ -253,8 +252,12 @@ void run_matmul_cuda_shared(const float* A, const float* B, float* C, int mat_di
   dim3 grid_dim(((mat_dim - 1) / BLOCKDIM) + 1, ((mat_dim - 1) / BLOCKDIM) + 1);
   size_t shared_bytes = block_dim.x * block_dim.y * 2 * sizeof(float);
 
+  startTimer(MATMUL_TIMER);
   matmul_cuda_shared<<<grid_dim, block_dim, shared_bytes>>>(devA, devB, devC, mat_dim);
   cudaDeviceSynchronize();
+  endTimer(MATMUL_TIMER);
+
+  if (matmul_time) { *matmul_time = getElapsedTime(MATMUL_TIMER); }
 
 #undef BLOCKDIM
 

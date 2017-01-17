@@ -3,17 +3,23 @@
 #include <stdio.h>
 #include <sys/time.h>
 
+#include <iostream>
+#include <vector>
+using namespace std;
+
 #define MICRO 1000000
 
-struct timeval startTime;
-struct timeval endTime;
+vector<struct timeval> startTime(50);
+vector<struct timeval> endTime(50);
+
+
 
 /*
  * Returns true on success;
  * Returns false on error;
  */
-bool startTimer() {
-  if(gettimeofday(&startTime, NULL)!=0) {
+bool startTimer(int id) {
+  if(gettimeofday(&startTime[id], NULL)!=0) {
     return false;
   }
   return true;
@@ -23,8 +29,8 @@ bool startTimer() {
  * Returns true on success;
  * Returns false on error;
  */
-bool endTimer() {
-  if(gettimeofday(&endTime, NULL)!=0) {
+bool endTimer(int id) {
+  if(gettimeofday(&endTime[id], NULL)!=0) {
     return false;
   }
   return true;
@@ -33,8 +39,8 @@ bool endTimer() {
 /*
  * Returns elapsed time
  */
-unsigned long long int getElapsedTime() {
-  unsigned long long int startTimeMicroSeconds = startTime.tv_sec*MICRO + startTime.tv_usec;
-  unsigned long long int endTimeMicroSeconds = endTime.tv_sec*MICRO + endTime.tv_usec;
+ULL getElapsedTime(int id) {
+  ULL startTimeMicroSeconds = startTime[id].tv_sec*MICRO + startTime[id].tv_usec;
+  ULL endTimeMicroSeconds = endTime[id].tv_sec*MICRO + endTime[id].tv_usec;
   return endTimeMicroSeconds - startTimeMicroSeconds;
 }

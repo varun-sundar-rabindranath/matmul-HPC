@@ -1,10 +1,18 @@
 #ifndef __TIMER_HPP__
 #define __TIMER_HPP__
 
-bool startTimer();
+#define ULL unsigned long long int
 
-bool endTimer();
+typedef enum {
+  APP_TIMER    = 0,
+  MATMUL_TIMER = 1,
+  TIMER_ID_END = 2,
+}timer_id;
 
-unsigned long long int getElapsedTime();
+bool startTimer(int id);
+
+bool endTimer(int id);
+
+ULL getElapsedTime(int id);
 
 #endif // __TIMER_HPP__
