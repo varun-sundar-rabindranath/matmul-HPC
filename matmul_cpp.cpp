@@ -180,7 +180,7 @@ int main(int argc, char *argv[]) {
 
   /******************************** Matrix multiply CUDA ***********************/
   /* Naive CUDA Matrix Multiply */
-#if 0
+#if 1
   startTimer();
   run_matmul_cuda(A, B, C, mat_dim);
   endTimer();
@@ -194,7 +194,7 @@ int main(int argc, char *argv[]) {
 
   /* CUDA Transpose Matrix Multiply */
 
-#if 1
+#if 0
   startTimer();
   run_matmul_cuda_transpose(A, B, C, mat_dim);
   endTimer();
@@ -204,6 +204,19 @@ int main(int argc, char *argv[]) {
   } else {
     cout<<"CUDA Transpose Matrix Multiply Fail - "<<getElapsedTime() / (double)M<<" sec."<<endl;
   }
+#endif
+
+#if 1
+  startTimer();
+  run_matmul_cuda_shared(A, B, C, mat_dim);
+  endTimer();
+
+  if(check_matmul(A, B, C, mat_dim)) {
+    cout<<"CUDA Shared Matrix Multiply Pass - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+  } else {
+    cout<<"CUDA Shared Matrix Multiply Fail - "<<getElapsedTime() / (double)M<<" sec."<<endl;
+  }
+
 #endif
 
   free(A);
